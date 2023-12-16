@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34407.89
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.Server", "SignalR.Server\SignalR.Server.csproj", "{00331297-4F39-46F6-8AB7-7FE39900B385}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Net8.Client", "Blazor.Net8.Client\Blazor.Net8.Client.csproj", "{4AB85B56-BA13-49AD-B537-839898177E7C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{00331297-4F39-46F6-8AB7-7FE39900B385}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00331297-4F39-46F6-8AB7-7FE39900B385}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00331297-4F39-46F6-8AB7-7FE39900B385}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00331297-4F39-46F6-8AB7-7FE39900B385}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AB85B56-BA13-49AD-B537-839898177E7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AB85B56-BA13-49AD-B537-839898177E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AB85B56-BA13-49AD-B537-839898177E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AB85B56-BA13-49AD-B537-839898177E7C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {06BC489A-AE92-4D2D-892C-8DC19AB05AE5}
+	EndGlobalSection
+EndGlobal
