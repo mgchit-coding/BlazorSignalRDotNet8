@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SignalR.Server.Models;
 using SignalR.Server.Services;
 
@@ -17,9 +18,25 @@ namespace SignalR.Server.Controllers
         }
 
         [HttpPost,Route("Login")]
-        public async Task<bool> Login(LoginModel requestModel)
+        public async Task<IActionResult> Login(LoginRequestModel requestModel)
         {
-
+            var isActive = await _context.login
+                .FirstOrDefaultAsync(x => x.UserName == requestModel.UserName &&
+                x.Password == requestModel.Password);
+            if (!isActive.Status)
+            {
+                isActive.Status = true;
+                _context.Update(isActive);
+                await _context.SaveChangesAsync();
+                HttpContext.Response.Cookies.Append("UserName", isActive.UserName);
+            }
+            return Ok(isActive);
         }
+    }
+
+    public class LoginRequestModel
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
 }
