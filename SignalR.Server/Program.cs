@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using SignalR.Server.Hubs;
@@ -23,6 +24,14 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
 },ServiceLifetime.Transient);
 
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,7 +47,7 @@ app.MapHub<ChatHub>("/chathub");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
+app.UseSession();
 app.MapControllers();
 
 app.Run();

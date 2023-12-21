@@ -23,7 +23,7 @@
             Password = Password
         };
         HttpClient client = new HttpClient();
-        client.BaseAddress = new Uri("https://localhost:7127");
+        client.BaseAddress = new Uri("http://localhost:5090");
         var response = await client.PostAsJsonAsync("api/Login/Login", obj);
         // string jsonStr = await response.Content.ReadAsStringAsync();
         if (response.IsSuccessStatusCode)

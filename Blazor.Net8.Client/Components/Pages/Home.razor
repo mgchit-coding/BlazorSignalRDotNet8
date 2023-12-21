@@ -3,6 +3,9 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
+@inject IDialogService DialogService
+@inject NavigationManager _nav
+@inject ISnackbar Snackbar
 
 <PageTitle>Home</PageTitle>
 
@@ -37,20 +40,36 @@
 
     protected override async Task OnInitializedAsync()
     {
+
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("https://localhost:7127/chathub"))
+            .WithUrl(Navigation.ToAbsoluteUri("http://localhost:5090/chathub"))
             .Build();
 
         hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
         {
-            var encodedMsg = $"{user}: {message}";
-            messages.Add(encodedMsg);
-            InvokeAsync(StateHasChanged);
+            // var encodedMsg = $"{user}: {message}";
+            // messages.Add(encodedMsg);
+            // InvokeAsync(StateHasChanged);
+            Snackbar.Add($"{user},{message}", Severity.Info);
+            _nav.NavigateTo("/");
+            // Task.Run(() =>
+            // {
+            //     ShowDialog();
+            // });
         });
 
         await hubConnection.StartAsync();
     }
-
+    private async Task ShowDialog()
+    {
+        await InvokeAsync(() =>
+        {
+            var options = new DialogOptions { ClassBackground = "my-custom-class" };
+            DialogService.Show<D_Logout>("Simple Dialog", options);
+            _nav.NavigateTo("/");
+        });
+    }
     private async Task Send()
     {
         if (hubConnection is not null)
