@@ -39,22 +39,10 @@
             .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<string>("GoToLogin", async (connectionId) =>
-        {
-            await hubConnection.SendAsync("Logout", connectionId);
-            await InvokeAsync(StateHasChanged);
-        });
-
-        hubConnection.On<string>("GoToLogout", async (connectionId) =>
+        hubConnection.On("GoToLogin", async () =>
         {
             Navigation.NavigateTo("/");
-            Snackbar.Add($"Another login is founded.", Severity.Warning);
             await InvokeAsync(StateHasChanged);
-        });
-
-        hubConnection.On<string>("LogOut", async (userName) =>
-        {
-            await HubContext.Clients.Group(userName).SendAsync("GoToLogout", userName);
         });
 
         await hubConnection.StartAsync();

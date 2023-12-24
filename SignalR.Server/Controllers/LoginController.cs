@@ -30,16 +30,22 @@ namespace SignalR.Server.Controllers
             var item = await _context.User
                 .FirstOrDefaultAsync(x => x.UserName == requestModel.UserName &&
                                           x.Password == requestModel.Password);
+            var loginCount = await _context.Login.CountAsync();
+
             LoginDataModel model = new LoginDataModel();
             if (item is not null)
             {
-                 model = new LoginDataModel
+                model = new LoginDataModel
                 {
                     UserId = item.GeneratedUserId,
                     SessionId = Guid.NewGuid().ToString()
                 };
                 await _context.Login.AddAsync(model);
                 await _context.SaveChangesAsync();
+                if (loginCount > 0)
+                {
+                    await _chatHub.PushNotification(model);
+                }
             }
 
             var responseModel = new ResponseModel()

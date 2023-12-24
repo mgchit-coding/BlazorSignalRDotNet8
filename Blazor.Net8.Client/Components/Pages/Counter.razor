@@ -38,7 +38,6 @@
 
         hubConnection.On<string>("Notification", (connectionId) =>
         {
-
             _nav.NavigateTo("/");
             Snackbar.Add($"Another login is founded.", Severity.Warning);
             InvokeAsync(StateHasChanged);

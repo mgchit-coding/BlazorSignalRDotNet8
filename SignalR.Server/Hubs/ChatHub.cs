@@ -29,11 +29,11 @@ namespace SignalR.Server.Hubs
         //     await _connection.InvokeAsync("PushNotification", model.UserName);
         // }
         //
-        // public async Task CreateUserConnection(LoginModel model)
-        // {
-        //     if (_connection.State == HubConnectionState.Disconnected)
-        //         await _connection.StartAsync();
-        //     await _connection.InvokeAsync("CreateUserConnection", model);
-        // }
+        public async Task PushNotification(LoginDataModel model)
+        {
+            if (_connection.State == HubConnectionState.Disconnected)
+                await _connection.StartAsync();
+            await _connection.InvokeAsync("PushNotification", model);
+        }
     }
 }

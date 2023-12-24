@@ -77,13 +77,13 @@ namespace Blazor.Net8.Client.Hubs
             }
         }
 
-        public async Task PushNotification(string connectionId)
+        public async Task PushNotification(LoginDataModel model)
         {
-            //var count = ConnectedUser.Ids;
-            await Clients.Group(connectionId).SendAsync("Notification", connectionId);
-            //await Clients.All.SendAsync("LogOut", connectionId);
-            //await Clients.All.SendAsync("GoToLogin", connectionId);
-            //await Clients.Client(connectionId).SendAsync("GoToLogout", connectionId);
+            var item = await _context.Login
+                .FirstOrDefaultAsync(x => x.UserId == model.UserId &&
+                x.SessionId != model.SessionId);
+            if (item is not null && item.ConnectionId is not null)
+                await Clients.Client(item.ConnectionId).SendAsync("GoToLogin");
         }
 
         public async Task Logout(string connectionId)
