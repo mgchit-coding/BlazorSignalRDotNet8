@@ -77,13 +77,9 @@ namespace Blazor.Net8.Client.Hubs
             }
         }
 
-        public async Task PushNotification(LoginDataModel model)
+        public async Task PushNotification(List<string> connectionIds)
         {
-            var item = await _context.Login
-                .FirstOrDefaultAsync(x => x.UserId == model.UserId &&
-                x.SessionId != model.SessionId);
-            if (item is not null && item.ConnectionId is not null)
-                await Clients.Client(item.ConnectionId).SendAsync("GoToLogin");
+            await Clients.Clients(connectionIds).SendAsync("GoToLogin");
         }
 
         public async Task Logout(string connectionId)

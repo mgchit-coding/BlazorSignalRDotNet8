@@ -7,10 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Remove="Components\Pages\Login.razor" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
 		<PackageReference Include="MudBlazor" Version="6.11.2" />

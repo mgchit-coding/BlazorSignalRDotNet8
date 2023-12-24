@@ -36,13 +36,6 @@
         .WithUrl(_nav.ToAbsoluteUri("/chathub"))
         .Build();
 
-        hubConnection.On<string>("Notification", (connectionId) =>
-        {
-            _nav.NavigateTo("/");
-            Snackbar.Add($"Another login is founded.", Severity.Warning);
-            InvokeAsync(StateHasChanged);
-        });
-
         await hubConnection.StartAsync();
     }
 
@@ -61,9 +54,15 @@
         if (response.IsSuccessStatusCode)
         {
             var model = JsonConvert.DeserializeObject<LoginDataModel>(responseModel.ResponseData);
-            if (hubConnection != null) await hubConnection.SendAsync("CreateUserConnection", model, UserType);
+            await CreateHubConnection();
             _nav.NavigateTo("/home");
         }
+    }
+
+    private async Task CreateHubConnection()
+    {
+        if (hubConnection != null)
+            await hubConnection.SendAsync("CreateUserConnection", model, UserType);
     }
 
     public bool IsConnected =>

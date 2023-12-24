@@ -39,10 +39,10 @@
             .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On("GoToLogin", async () =>
+        hubConnection.On("GoToLogin", () =>
         {
-            Navigation.NavigateTo("/");
-            await InvokeAsync(StateHasChanged);
+            Navigation.NavigateTo("/", true);
+            // await InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();

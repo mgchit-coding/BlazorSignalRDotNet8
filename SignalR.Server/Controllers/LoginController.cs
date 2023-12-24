@@ -27,32 +27,59 @@ namespace SignalR.Server.Controllers
         [HttpPost, Route("Login")]
         public async Task<IActionResult> Login(LoginRequestModel requestModel)
         {
+            var responseModel = new ResponseModel();
             var item = await _context.User
                 .FirstOrDefaultAsync(x => x.UserName == requestModel.UserName &&
                                           x.Password == requestModel.Password);
-            var loginCount = await _context.Login.CountAsync();
 
             LoginDataModel model = new LoginDataModel();
-            if (item is not null)
+            if (item is null)
             {
-                model = new LoginDataModel
+                responseModel = new ResponseModel()
                 {
-                    UserId = item.GeneratedUserId,
-                    SessionId = Guid.NewGuid().ToString()
+                    ResponseMessage = "Fail"
                 };
-                await _context.Login.AddAsync(model);
-                await _context.SaveChangesAsync();
-                if (loginCount > 0)
-                {
-                    await _chatHub.PushNotification(model);
-                }
+                goto result;
             }
 
-            var responseModel = new ResponseModel()
+            #region Login
+
+            model = new LoginDataModel
+            {
+                UserId = item.GeneratedUserId,
+                SessionId = Guid.NewGuid().ToString()
+            };
+            await _context.Login.AddAsync(model);
+            await _context.SaveChangesAsync();
+
+            #endregion
+
+            #region Logout All UserId (not included current Session Id)
+
+            var loginCount = await _context.Login
+                .CountAsync(
+                    x =>
+                    x.UserId == item.GeneratedUserId &&
+                    x.SessionId != model.SessionId);
+            if (loginCount > 0)
+            {
+                var connectionIds = await _context.Login.Where(
+                    x =>
+                    x.UserId == item.GeneratedUserId &&
+                    x.SessionId != model.SessionId)
+                    .Select(x => x.ConnectionId)
+                    .ToListAsync();
+                await _chatHub.PushNotification(connectionIds);
+            }
+
+            #endregion
+
+            responseModel = new ResponseModel()
             {
                 ResponseData = JsonConvert.SerializeObject(model),
                 ResponseMessage = item is not null ? "Success" : "Fail"
             };
+            result:
             return Ok(responseModel);
         }
     }
