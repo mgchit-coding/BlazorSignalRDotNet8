@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SignalR.Server.Hubs;
 using SignalR.Server.Models;
 using SignalR.Server.Services;
@@ -26,33 +27,27 @@ namespace SignalR.Server.Controllers
         [HttpPost, Route("Login")]
         public async Task<IActionResult> Login(LoginRequestModel requestModel)
         {
-            var isActive = await _context.login
+            var item = await _context.User
                 .FirstOrDefaultAsync(x => x.UserName == requestModel.UserName &&
-                x.Password == requestModel.Password);
-            if (!isActive.Status)
+                                          x.Password == requestModel.Password);
+            LoginDataModel model = new LoginDataModel();
+            if (item is not null)
             {
-                isActive.Status = true;
-                _context.Update(isActive);
+                 model = new LoginDataModel
+                {
+                    UserId = item.GeneratedUserId,
+                    SessionId = Guid.NewGuid().ToString()
+                };
+                await _context.Login.AddAsync(model);
                 await _context.SaveChangesAsync();
-                await _chatHub.CreateUserConnection(isActive);
             }
-            else
+
+            var responseModel = new ResponseModel()
             {
-                await _chatHub.SendNotification(isActive);
-            }
-            return Ok(isActive);
-        }
-        
-        [HttpGet]
-        public async Task<IActionResult> UpdateUserStatus()
-        {
-            var isActive = await _context.login
-                .FirstOrDefaultAsync(x => x.UserName == "mgchit" &&
-                x.Password == "123");
-            isActive.Status = false;
-            _context.Update(isActive);
-            await _context.SaveChangesAsync();
-            return Ok(isActive);
+                ResponseData = JsonConvert.SerializeObject(model),
+                ResponseMessage = item is not null ? "Success" : "Fail"
+            };
+            return Ok(responseModel);
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 using SignalR.Server.Models;
 using SignalR.Server.Services;
@@ -6,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace SignalR.Server.Hubs
 {
-    public class ChatHub
+    public class ChatHub 
     {
         private HubConnection _connection;
         private readonly AppDbContext _appDbContext;
@@ -18,20 +19,21 @@ namespace SignalR.Server.Hubs
             _appDbContext = appDbContext;
         }
 
-        public async Task SendNotification(LoginModel model)
-        {
-            if (_connection.State == HubConnectionState.Disconnected)
-                await _connection.StartAsync();
-            var item = await _appDbContext.notification
-                .FirstOrDefaultAsync(x => x.LoginId == model.Id);
-            await _connection.InvokeAsync("PushNotification", item.ConnectionId);
-        }
-
-        public async Task CreateUserConnection(LoginModel model)
-        {
-            if (_connection.State == HubConnectionState.Disconnected)
-                await _connection.StartAsync();
-            await _connection.InvokeAsync("CreateUserConnection", model);
-        }
+        // public async Task SendNotification(LoginModel model)
+        // {
+        //     if (_connection.State == HubConnectionState.Disconnected)
+        //         await _connection.StartAsync();
+        //     var item = await _appDbContext.Notification
+        //         .FirstOrDefaultAsync(x => x.LoginId == model.Id);
+        //     //await _connection.InvokeAsync("PushNotification", item.ConnectionId);
+        //     await _connection.InvokeAsync("PushNotification", model.UserName);
+        // }
+        //
+        // public async Task CreateUserConnection(LoginModel model)
+        // {
+        //     if (_connection.State == HubConnectionState.Disconnected)
+        //         await _connection.StartAsync();
+        //     await _connection.InvokeAsync("CreateUserConnection", model);
+        // }
     }
 }

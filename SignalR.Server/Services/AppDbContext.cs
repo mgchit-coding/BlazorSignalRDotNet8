@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     {
 
     }
-    public DbSet<LoginModel> login {  get; set; }
-    public DbSet<NotificationDataModel> notification { get; set; }
+    public DbSet<LoginDataModel> Login {  get; set; }
+    public DbSet<UserDataModel> User {  get; set; }
+    public DbSet<NotificationDataModel> Notification {  get; set; }
 }

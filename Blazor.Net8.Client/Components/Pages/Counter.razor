@@ -2,7 +2,16 @@
 @inject NavigationManager _nav
 @inject AuthenticationStateProvider _authStateProvider
 @inject ISnackbar Snackbar
+@using Blazor.Net8.Client.Models
+@using SignalR.Server.Models
 @implements IAsyncDisposable
+
+<select class="form-select form-select-lg mb-3" @bind="UserType"
+        aria-label="Large select example">
+    <option selected>select role</option>
+    <option value="User">User</option>
+    <option value="Admin">Admin</option>
+</select>
 
 <div class="mb-3">
     <label for="exampleInputEmail1" class="form-label">User Name</label>
@@ -19,6 +28,7 @@
     private string UserName = "mgchit";
     private string Password = "123";
     private HubConnection? hubConnection;
+    private string UserType { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,20 +49,20 @@
 
     private async Task Login()
     {
-        var obj = new LoginModel
+        var loginModel = new LoginModel
             {
                 UserName = UserName,
                 Password = Password
             };
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("http://localhost:5090");
-        var response = await client.PostAsJsonAsync("api/Login/Login", obj);
+        var response = await client.PostAsJsonAsync("api/Login/Login", loginModel);
         string jsonStr = await response.Content.ReadAsStringAsync();
-        var responseModel = JsonConvert.DeserializeObject<LoginModel>(jsonStr);
+        var responseModel = JsonConvert.DeserializeObject<ServerResponseModel>(jsonStr);
         if (response.IsSuccessStatusCode)
         {
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)_authStateProvider;
-            await customAuthStateProvider.UpdateAuthenticationState(responseModel);
+            var model = JsonConvert.DeserializeObject<LoginDataModel>(responseModel.ResponseData);
+            if (hubConnection != null) await hubConnection.SendAsync("CreateUserConnection", model, UserType);
             _nav.NavigateTo("/home");
         }
     }

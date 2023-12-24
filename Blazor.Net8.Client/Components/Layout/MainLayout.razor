@@ -1,7 +1,9 @@
 ﻿@inherits LayoutComponentBase
-
+@using Microsoft.AspNetCore.SignalR
+@using Blazor.Net8.Client.Hubs
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IHubContext<ChatHub> HubContext
 @implements IAsyncDisposable
 
 <div class="page">
@@ -25,11 +27,11 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-<MudThemeProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-@code{
+@code {
     private HubConnection? hubConnection;
     protected override async Task OnInitializedAsync()
     {
@@ -37,17 +39,22 @@
             .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<string>("GoToLogin",async(connectionId) =>
+        hubConnection.On<string>("GoToLogin", async (connectionId) =>
         {
-            await hubConnection.SendAsync("Logout",connectionId);
+            await hubConnection.SendAsync("Logout", connectionId);
             await InvokeAsync(StateHasChanged);
         });
 
-        hubConnection.On<string>("GoToLogout", async(connectionId) =>
+        hubConnection.On<string>("GoToLogout", async (connectionId) =>
         {
             Navigation.NavigateTo("/");
             Snackbar.Add($"Another login is founded.", Severity.Warning);
             await InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<string>("LogOut", async (userName) =>
+        {
+            await HubContext.Clients.Group(userName).SendAsync("GoToLogout", userName);
         });
 
         await hubConnection.StartAsync();

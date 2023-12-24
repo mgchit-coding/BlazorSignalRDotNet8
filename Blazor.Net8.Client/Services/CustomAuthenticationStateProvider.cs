@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
+using SignalR.Server.Models;
 
 namespace Blazor.Net8.Client.Services
 {
@@ -38,7 +39,7 @@ namespace Blazor.Net8.Client.Services
             }
         }
 
-        public async Task UpdateAuthenticationState(LoginModel userSession)
+        public async Task UpdateAuthenticationState(UserDataModel userSession)
         {
             ClaimsPrincipal claimsPrincipal;
 

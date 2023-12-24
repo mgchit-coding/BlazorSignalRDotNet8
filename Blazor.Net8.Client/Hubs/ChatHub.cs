@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MudBlazor.Extensions;
 using System.Runtime.CompilerServices;
+using SignalR.Server.Models;
 using static MudBlazor.CategoryTypes;
 
 namespace Blazor.Net8.Client.Hubs
@@ -23,6 +24,8 @@ namespace Blazor.Net8.Client.Hubs
 
         public override async Task OnConnectedAsync()
         {
+            ConnectedUser.Ids.Add(Context.ConnectionId);
+            Console.WriteLine($"First Connection Id {Context.ConnectionId}");
             //var customAuthStateProvider = (CustomAuthenticationStateProvider)_authenticationStateProvider;
             //var model = await customAuthStateProvider.GetUserData();
             //var result = _context.login.FirstOrDefault(x => x.UserName == model.UserName);
@@ -38,36 +41,58 @@ namespace Blazor.Net8.Client.Hubs
             //}
         }
 
-        public async Task CreateUserConnection(LoginModel requestModel)
+        // public async Task CreateUserConnection(LoginModel requestModel)
+        // {
+        //     var result = await _context.Notification.FirstOrDefaultAsync(x => x.LoginId == requestModel.Id);
+        //     var model = new NotificationDataModel
+        //     {
+        //         ConnectionId = Context.ConnectionId,
+        //         // LoginId = requestModel.Id,
+        //     };
+        //     if (result is null)
+        //     {
+        //         _context.Notification.Add(model);
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     else
+        //     {
+        //         //_context.Entry(model).State = EntityState.Modified;
+        //         _context.Notification.Update(model);
+        //         await _context.SaveChangesAsync();
+        //     }
+        //     await Groups.AddToGroupAsync(Context.ConnectionId, requestModel.UserName);
+        // }
+
+        public async Task CreateUserConnection(LoginDataModel model, string userType)
         {
-            var result = await _context.notification.FirstOrDefaultAsync(x => x.LoginId == requestModel.Id);
-            var model = new NotificationDataModel
+            var item = await _context.Login
+                .FirstOrDefaultAsync(x => x.UserId == model.UserId &&
+                                          x.SessionId == model.SessionId);
+            if (item is not null)
             {
-                ConnectionId = Context.ConnectionId,
-                LoginId = requestModel.Id,
-            };
-            if (result is null)
-            {
-                _context.notification.Add(model);
+                item.ConnectionId = Context.ConnectionId;
+                _context.Login.Update(item);
                 await _context.SaveChangesAsync();
-            }
-            else
-            {
-                //_context.Entry(model).State = EntityState.Modified;
-                _context.notification.Update(model);
-                await _context.SaveChangesAsync();
+                await Groups.AddToGroupAsync(Context.ConnectionId, userType);
             }
         }
 
         public async Task PushNotification(string connectionId)
         {
-            var id = connectionId;
-            await Clients.All.SendAsync("GoToLogin", connectionId);
+            //var count = ConnectedUser.Ids;
+            await Clients.Group(connectionId).SendAsync("Notification", connectionId);
+            //await Clients.All.SendAsync("LogOut", connectionId);
+            //await Clients.All.SendAsync("GoToLogin", connectionId);
+            //await Clients.Client(connectionId).SendAsync("GoToLogout", connectionId);
         }
 
-        public async Task Logout(string connectioinId)
+        public async Task Logout(string connectionId)
         {
-            await Clients.Clients(connectioinId).SendAsync("GoToLogout");
+            await Clients.Users(connectionId).SendAsync("GoToLogout", connectionId);
         }
+    }
+    public static class ConnectedUser
+    {
+        public static List<string> Ids = new List<string>();
     }
 }
