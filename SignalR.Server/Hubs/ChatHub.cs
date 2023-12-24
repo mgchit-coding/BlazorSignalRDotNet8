@@ -1,43 +1,37 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
+using SignalR.Server.Models;
 using SignalR.Server.Services;
-namespace SignalR.Server.Hubs;
+using System.Runtime.CompilerServices;
 
-public class ChatHub : Hub
+namespace SignalR.Server.Hubs
 {
-    //public async Task SendMessage(string user, string message)
-    //{
-    //    await Clients.All.SendAsync("ReceiveMessage", user, message);
-    //}
-    private readonly AppDbContext _context;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    public ChatHub(AppDbContext context, IHttpContextAccessor httpContextAccessor)
+    public class ChatHub
     {
-        _context = context;
-        _httpContextAccessor = httpContextAccessor;
-    }
-
-    public override async Task OnConnectedAsync()
-    {
-
-        //var httpContext = Context.GetHttpContext();
-        //var userName = httpContext?.Request.Cookies["UserName"];
-        //var userName = httpContext?.Current.Session.GetString("UserName");
-        //var httpContext = _httpContextAccessor.HttpContext;
-        //var userName = httpContext?.Request.Cookies["my_cookie"];
-        var isActive = await _context.login
-                .FirstOrDefaultAsync(x => x.UserName == "mgchit");
-        if (isActive is not null)
+        private HubConnection _connection;
+        private readonly AppDbContext _appDbContext;
+        public ChatHub(AppDbContext appDbContext)
         {
-            isActive.ConnectionId = Context.ConnectionId;
-            _context.Update(isActive);
-            await _context.SaveChangesAsync();
+            _connection = new HubConnectionBuilder()
+                .WithUrl("http://localhost:5261/chathub")
+                .Build();
+            _appDbContext = appDbContext;
         }
-        else
+
+        public async Task SendNotification(LoginModel model)
         {
-           
+            if (_connection.State == HubConnectionState.Disconnected)
+                await _connection.StartAsync();
+            var item = await _appDbContext.notification
+                .FirstOrDefaultAsync(x => x.LoginId == model.Id);
+            await _connection.InvokeAsync("PushNotification", item.ConnectionId);
         }
-        Console.WriteLine("Connection Started");
-        await base.OnConnectedAsync();
+
+        public async Task CreateUserConnection(LoginModel model)
+        {
+            if (_connection.State == HubConnectionState.Disconnected)
+                await _connection.StartAsync();
+            await _connection.InvokeAsync("CreateUserConnection", model);
+        }
     }
 }

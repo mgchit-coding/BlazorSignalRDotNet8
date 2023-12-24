@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SignalR.Server.Hubs;
 using SignalR.Server.Models;
 using SignalR.Server.Services;
+using System.Runtime.CompilerServices;
 
 namespace SignalR.Server.Controllers
 {
@@ -13,15 +15,15 @@ namespace SignalR.Server.Controllers
     public class LoginController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IHubContext<ChatHub> _hubContext;
+        private readonly ChatHub _chatHub;
 
-        public LoginController(AppDbContext context, IHubContext<ChatHub> hubContext)
+        public LoginController(AppDbContext context, ChatHub chatHub)
         {
             _context = context;
-            _hubContext = hubContext;
+            _chatHub = chatHub;
         }
 
-        [HttpPost,Route("Login")]
+        [HttpPost, Route("Login")]
         public async Task<IActionResult> Login(LoginRequestModel requestModel)
         {
             var isActive = await _context.login
@@ -32,21 +34,15 @@ namespace SignalR.Server.Controllers
                 isActive.Status = true;
                 _context.Update(isActive);
                 await _context.SaveChangesAsync();
-                HttpContext.Response.Cookies.Append("UserName", isActive.UserName);
-                HttpContext.Session.SetString("UserName", isActive.UserName);
-
-                var cookie = HttpContext.Request.Cookies["UserName"];
-                var session = HttpContext.Session.GetString("UserName");
+                await _chatHub.CreateUserConnection(isActive);
             }
             else
             {
-                await _hubContext.Clients.Clients(isActive.ConnectionId)
-                .SendAsync("ReceiveMessage", "Dear User",
-                "You login with other device");
+                await _chatHub.SendNotification(isActive);
             }
             return Ok(isActive);
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> UpdateUserStatus()
         {

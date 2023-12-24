@@ -1,5 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@implements IAsyncDisposable
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -24,3 +28,39 @@
 <MudThemeProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
+
+@code{
+    private HubConnection? hubConnection;
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+            .Build();
+
+        hubConnection.On<string>("GoToLogin",async(connectionId) =>
+        {
+            await hubConnection.SendAsync("Logout",connectionId);
+            await InvokeAsync(StateHasChanged);
+        });
+
+        hubConnection.On<string>("GoToLogout", async(connectionId) =>
+        {
+            Navigation.NavigateTo("/");
+            Snackbar.Add($"Another login is founded.", Severity.Warning);
+            await InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

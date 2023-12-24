@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SignalR.Server.Models;
+﻿using Blazor.Net8.Client.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace SignalR.Server.Services;
+
+namespace Blazor.Net8.Client.Services;
 
 public class AppDbContext : DbContext
 {
@@ -10,5 +11,5 @@ public class AppDbContext : DbContext
 
     }
     public DbSet<LoginModel> login {  get; set; }
-    public DbSet<NotificationDataModel> notification { get; set; }
+    public DbSet<NotificationDataModel> notification {  get; set; }
 }

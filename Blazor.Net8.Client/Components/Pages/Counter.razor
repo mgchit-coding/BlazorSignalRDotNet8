@@ -1,5 +1,9 @@
 ﻿@page "/"
 @inject NavigationManager _nav
+@inject AuthenticationStateProvider _authStateProvider
+@inject ISnackbar Snackbar
+@implements IAsyncDisposable
+
 <div class="mb-3">
     <label for="exampleInputEmail1" class="form-label">User Name</label>
     <input type="text" class="form-control" @bind-value="UserName" id="exampleInputEmail1"
@@ -14,21 +18,53 @@
 @code {
     private string UserName = "mgchit";
     private string Password = "123";
+    private HubConnection? hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(_nav.ToAbsoluteUri("/chathub"))
+        .Build();
+
+        hubConnection.On<string>("Notification", (connectionId) =>
+        {
+
+            _nav.NavigateTo("/");
+            Snackbar.Add($"Another login is founded.", Severity.Warning);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
 
     private async Task Login()
     {
-        var obj = new
-        {
-            UserName = UserName,
-            Password = Password
-        };
+        var obj = new LoginModel
+            {
+                UserName = UserName,
+                Password = Password
+            };
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("http://localhost:5090");
         var response = await client.PostAsJsonAsync("api/Login/Login", obj);
-        // string jsonStr = await response.Content.ReadAsStringAsync();
+        string jsonStr = await response.Content.ReadAsStringAsync();
+        var responseModel = JsonConvert.DeserializeObject<LoginModel>(jsonStr);
         if (response.IsSuccessStatusCode)
         {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)_authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(responseModel);
             _nav.NavigateTo("/home");
+        }
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
         }
     }
 }
