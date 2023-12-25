@@ -1,6 +1,6 @@
-﻿namespace SignalR.Server.Models;
+﻿namespace BlazorDotNet8.Models;
 
-public class ResponseModel
+public class ServerResponseModel
 {
     public string ResponseData { get; set; }
     public string ResponseMessage { get; set; }

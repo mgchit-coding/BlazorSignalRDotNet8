@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SignalR.Server.Models;
-using NotificationDataModel = Blazor.Net8.Client.Models.NotificationDataModel;
-
-
-namespace Blazor.Net8.Client.Services;
+﻿namespace BlazorDotNet8.Client.Services;
 
 public class AppDbContext : DbContext
 {

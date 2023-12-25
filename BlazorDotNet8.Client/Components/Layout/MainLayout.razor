@@ -1,10 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.SignalR
-@using Blazor.Net8.Client.Hubs
+@using BlazorDotNet8.Client.Hubs
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject IHubContext<ChatHub> HubContext
 @implements IAsyncDisposable
+@inject ConnectionIdStateContainer ConnectionIdStateContainer
 
 <div class="page">
     <div class="sidebar">
@@ -33,6 +34,7 @@
 
 @code {
     private HubConnection? hubConnection;
+
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
@@ -46,6 +48,16 @@
         });
 
         await hubConnection.StartAsync();
+
+        ConnectionIdStateContainer.OnChange += CreateUserConnection;
+    }
+
+    private void CreateUserConnection()
+    {
+        if (hubConnection is not null)
+        {
+            Task.Run(() => hubConnection.SendAsync("CreateUserConnection", ConnectionIdStateContainer.Data, "User"));
+        }
     }
 
     public bool IsConnected =>
@@ -57,5 +69,8 @@
         {
             await hubConnection.DisposeAsync();
         }
+
+        ConnectionIdStateContainer.OnChange -= StateHasChanged;
     }
+
 }

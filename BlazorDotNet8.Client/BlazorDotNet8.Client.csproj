@@ -17,15 +17,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<UpToDateCheckInput Remove="Components\Pages\Login.razor" />
+	  <ProjectReference Include="..\BlazorDotNet8.Models\BlazorDotNet8.Models.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<_ContentIncludedByDefault Remove="Components\Pages\Login.razor" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\SignalR.Server\SignalR.Server.csproj" />
+	  <Folder Include="Models\" />
 	</ItemGroup>
 
 </Project>

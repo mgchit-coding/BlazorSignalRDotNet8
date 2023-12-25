@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SignalR.Server.Models;
+using BlazorDotNet8.Models;
 
 namespace SignalR.Server.Services;
 

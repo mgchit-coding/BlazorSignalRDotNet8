@@ -1,10 +1,10 @@
 ﻿@page "/"
+@using BlazorDotNet8.Client.Hubs
+@using Microsoft.AspNetCore.SignalR
 @inject NavigationManager _nav
 @inject AuthenticationStateProvider _authStateProvider
 @inject ISnackbar Snackbar
-@using Blazor.Net8.Client.Models
-@using SignalR.Server.Models
-@implements IAsyncDisposable
+@inject ConnectionIdStateContainer ConnectionIdStateContainer
 
 <select class="form-select form-select-lg mb-3" @bind="UserType"
         aria-label="Large select example">
@@ -27,25 +27,19 @@
 @code {
     private string UserName = "mgchit";
     private string Password = "123";
-    private HubConnection? hubConnection;
     private string UserType { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder()
-        .WithUrl(_nav.ToAbsoluteUri("/chathub"))
-        .Build();
-
-        await hubConnection.StartAsync();
     }
 
     private async Task Login()
     {
         var loginModel = new LoginModel
-            {
-                UserName = UserName,
-                Password = Password
-            };
+        {
+            UserName = UserName,
+            Password = Password
+        };
         HttpClient client = new HttpClient();
         client.BaseAddress = new Uri("http://localhost:5090");
         var response = await client.PostAsJsonAsync("api/Login/Login", loginModel);
@@ -54,25 +48,9 @@
         if (response.IsSuccessStatusCode)
         {
             var model = JsonConvert.DeserializeObject<LoginDataModel>(responseModel.ResponseData);
-            await CreateHubConnection();
+            ConnectionIdStateContainer.Data = model;
             _nav.NavigateTo("/home");
         }
     }
 
-    private async Task CreateHubConnection()
-    {
-        if (hubConnection != null)
-            await hubConnection.SendAsync("CreateUserConnection", model, UserType);
-    }
-
-    public bool IsConnected =>
-        hubConnection?.State == HubConnectionState.Connected;
-
-    public async ValueTask DisposeAsync()
-    {
-        if (hubConnection is not null)
-        {
-            await hubConnection.DisposeAsync();
-        }
-    }
 }
