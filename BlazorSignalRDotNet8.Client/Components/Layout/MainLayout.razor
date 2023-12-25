@@ -56,7 +56,8 @@
     {
         if (hubConnection is not null)
         {
-            Task.Run(() => hubConnection.SendAsync("CreateUserConnection", ConnectionIdStateContainer.Data, "User"));
+            // Task.Run(() => hubConnection.SendAsync("CreateUserConnection", ConnectionIdStateContainer.Data, "User"));
+            hubConnection.SendAsync("CreateUserConnection", ConnectionIdStateContainer.Data, "User").ConfigureAwait(false);
         }
     }
 
