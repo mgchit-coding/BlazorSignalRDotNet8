@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using SignalR.Server.Hubs;
 using BlazorDotNet8.Models;
-using SignalR.Server.Services;
 using System.Runtime.CompilerServices;
+using BlazorDotNet8.Server.Hubs;
+using BlazorDotNet8.Server.Services;
 
-namespace SignalR.Server.Controllers;
+namespace BlazorDotNet8.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

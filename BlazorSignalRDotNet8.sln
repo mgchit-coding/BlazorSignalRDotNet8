@@ -3,16 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34407.89
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalR.Server", "SignalR.Server\SignalR.Server.csproj", "{00331297-4F39-46F6-8AB7-7FE39900B385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorSignalRDotNet8.Server", "BlazorSignalRDotNet8.Server\BlazorSignalRDotNet8.Server.csproj", "{00331297-4F39-46F6-8AB7-7FE39900B385}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorDotNet8.Client", "BlazorDotNet8.Client\BlazorDotNet8.Client.csproj", "{4AB85B56-BA13-49AD-B537-839898177E7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorSignalRDotNet8.Client", "BlazorSignalRDotNet8.Client\BlazorSignalRDotNet8.Client.csproj", "{4AB85B56-BA13-49AD-B537-839898177E7C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{FE4177E4-C7EF-44B0-81E2-A5077DCCBBDD}"
 	ProjectSection(SolutionItems) = preProject
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorDotNet8.Models", "BlazorDotNet8.Models\BlazorDotNet8.Models.csproj", "{72F428AC-B64F-485C-8017-B2AB4A580B63}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorSignalRDotNet8.Models", "BlazorSignalRDotNet8.Models\BlazorSignalRDotNet8.Models.csproj", "{72F428AC-B64F-485C-8017-B2AB4A580B63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

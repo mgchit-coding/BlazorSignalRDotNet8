@@ -4,6 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>BlazorDotNet8.Client</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -17,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\BlazorDotNet8.Models\BlazorDotNet8.Models.csproj" />
+	  <ProjectReference Include="..\BlazorSignalRDotNet8.Models\BlazorSignalRDotNet8.Models.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

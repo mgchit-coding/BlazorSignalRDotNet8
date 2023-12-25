@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BlazorDotNet8.Models;
 
-namespace SignalR.Server.Services;
+namespace BlazorDotNet8.Server.Services;
 
 public class AppDbContext : DbContext
 {

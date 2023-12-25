@@ -1,7 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
-using SignalR.Server.Services;
-using SignalR.Server.Hubs;
+using BlazorDotNet8.Server.Services;
+using BlazorDotNet8.Server.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);

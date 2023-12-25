@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 using BlazorDotNet8.Models;
-using SignalR.Server.Services;
 using System.Runtime.CompilerServices;
+using BlazorDotNet8.Server.Services;
 
-namespace SignalR.Server.Hubs;
+namespace BlazorDotNet8.Server.Hubs;
 
 public class ChatHub 
 {
